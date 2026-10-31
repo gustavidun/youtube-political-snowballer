@@ -44,6 +44,8 @@ class YTPuppet():
         }
 
     async def _populate_metadata(self, recs):
+        if not recs:
+            return []
         return await get_videos_metadata(recs)
 
     async def _filter_language(self, recs : list[Video]):
@@ -52,7 +54,7 @@ class YTPuppet():
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _get_homepage_recs(self, driver : YouTubeDriver, depth):
         recs, topics = await driver.get_homepage_recs()
-        recs = await self._populate_metadata()
+        recs = await self._populate_metadata(recs)
 
         self.history.append(
             Watch(
@@ -95,6 +97,8 @@ class YTPuppet():
         except Exception as e:
             error_log.append(e)
             raise 
+
+        recs = await self._populate_metadata(recs)
 
         watch = Watch(
             state=self.cur_state, 

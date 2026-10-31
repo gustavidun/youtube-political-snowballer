@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 @dataclass
 class Video():
     id : str
-    slant : Optional[float] = None
     title : Optional[str] = None
     channel : Optional[str] = None
     description : Optional[str] = None
@@ -30,7 +29,6 @@ class Video():
 class Watch():
     state : str
     puppet : "YTPuppet"
-    puppet_slant : float
     puppet_cond : tuple
     depth : int
     video : Video

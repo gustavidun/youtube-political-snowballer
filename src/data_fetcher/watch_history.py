@@ -13,9 +13,10 @@ def get_participant_vids(p_id : str, n = 500, random:bool=False):
         .filter(pl.col("ideology") == p_id)
     )
     if random:
-        query = query.collect().sample(n=n)
+        df = query.collect()
+        df = df.sample(n=min(n, len(df)))
     else:
-        query = query.sort("time", descending=True).head(n)
+        df = query.sort("time", descending=True).head(n).collect()
         
-    ids = query.collect()["video_id"].to_list()
+    ids = df["video_id"].to_list()
     return [Video(id=_id) for _id in ids]

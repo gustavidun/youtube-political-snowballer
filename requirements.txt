@@ -6,3 +6,4 @@ shortuuid==1.0.13
 tenacity==9.1.2
 lingua-language-detector
 python-dotenv
+requests

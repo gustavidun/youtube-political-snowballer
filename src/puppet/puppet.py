@@ -180,7 +180,11 @@ class YTPuppet():
                 "video_id": getattr(w.video, "id", None),
                 "video_slant": getattr(w.video, "slant", None),
                 "recs_id": [r.id for r in w.recs],
-                "recs": [r for r in w.recs],
+                "recs_title": [r.title for r in w.recs],
+                "recs_channel": [r.channel for r in w.recs],
+                "recs_description": [r.description for r in w.recs],
+                "recs_tags": [r.tags for r in w.recs],
+                "recs_category": [r.tags for r in w.recs],
                 "errors": w.errors,
                 "source": w.source,
                 "watch_time": w.watch_time,
@@ -204,7 +208,7 @@ class YTPuppet():
             df = await self.serialize()
 
             path = config.PUPPETS_DIR / f"{self.ID}.pkl"
-            df.to_pickle(path)
+            df.to_parquet(path)
 
             self.logger.info(f"Puppet data saved to {path}. Closing...")
             self.cur_state = "closed"

@@ -16,7 +16,7 @@ from models import Watch, Video
 PuppetState = Literal["init", "training", "drifting", "closed"]
 
 class YTPuppet():
-    def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG):
+    def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG, languageTarget : list[Language] = [Language.DANISH]):
         self.ID = id
         self.cond = cond
 
@@ -27,8 +27,7 @@ class YTPuppet():
         self.cur_state : PuppetState = "init"
         self.history : list[Watch] = []
 
-        self.languageTarget = [Language.DANISH]
-        self.detector = LanguageDetectorBuilder.from_languages(self.languageTarget).build()
+        self.detector = LanguageDetectorBuilder.from_languages(languageTarget).build()
 
         self.logger = setup_logger(
             self.ID,

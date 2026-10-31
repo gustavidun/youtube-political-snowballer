@@ -1,1 +1,1 @@
-from .watch_history import get_participant_vids, get_participant_ids
+from .watch_history import get_participant_vids

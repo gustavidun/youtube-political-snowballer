@@ -47,14 +47,6 @@ pip install -r requirements.txt
 python -m patchright install chrome --with-deps
 ```
 
-### Environment Configuration
-
-Create a `.env` file in the project root:
-
-```env
-API_KEY='["YOUR_YOUTUBE_DATA_API_KEY"]'
-```
-
 ---
 
 ## Usage

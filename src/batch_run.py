@@ -31,6 +31,7 @@ async def safe_run(puppet : YTPuppet):
     try:
         await puppet.run()
     except Exception as e:
+        await puppet.serialize()
         puppet.logger.exception("Puppet crashed", exc_info=e)
         crashes += 1
 

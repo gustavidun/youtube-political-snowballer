@@ -62,7 +62,7 @@ class YTPuppet():
         return recs
 
 
-    async def _watch(self, driver : YouTubeDriver, vid : Video, depth, get_slants : bool) -> Watch:
+    async def _watch(self, driver : YouTubeDriver, vid : Video, depth) -> Watch:
         error_log = []
 
         try:
@@ -118,7 +118,7 @@ class YTPuppet():
         self.logger.debug(f"VIDEOS AVAILABLE: {len(train_vids)}")
 
         for i, vid in enumerate(train_vids):
-            await self._watch(driver, vid, i + 1, get_slants=False)
+            await self._watch(driver, vid, i + 1)
             if i % homepage_freq == 0:
                 await self._get_homepage_recs(driver, i + 1)
 
@@ -126,17 +126,29 @@ class YTPuppet():
     async def drift(self, driver : YouTubeDriver):
         self.cur_state = "drifting"
         recs = await self._get_homepage_recs(driver, 0)
-        next_vid = random.choice(recs)
-
+        
+        for i in range(3):
+            try:
+                next_vid = random.choice(recs)
+                break
+            except:
+                recs = await self._get_homepage_recs(driver, 0)
+            if i == 2:
+                raise Exception("Could not load homepage.")
+            
         for i in range(1, self.drift_depth + 1):
             try:
-                watch = await self._watch(driver, next_vid, i, get_slants=True)
+                watch = await self._watch(driver, next_vid, i)
                 recs = watch.recs
             except: 
                 recs = await self._get_homepage_recs(driver, 0)
 
-            next_vid = random.choice(recs)     
-
+            for i in range(3):
+                try:
+                    next_vid = random.choice(recs)
+                    break
+                except:
+                    recs = await self._get_homepage_recs(driver, 0)
 
     async def serialize(self):
         rows = [

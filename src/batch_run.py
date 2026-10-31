@@ -1,6 +1,7 @@
 import asyncio
 import argparse
 
+import logging
 from puppet import YTPuppet
 import shortuuid
 

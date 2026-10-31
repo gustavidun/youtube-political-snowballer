@@ -1,5 +1,3 @@
-from nt import pipe
-
 import polars as pl
 
 from config import VIDEO_IDS_PATH
@@ -19,5 +17,5 @@ def get_participant_vids(p_id : str, n = 500, random:bool=False):
     else:
         query = query.sort("time", descending=True).head(n)
         
-    ids = pipe.collect()["video_id"].to_list()
+    ids = query.collect()["video_id"].to_list()
     return [Video(id=_id) for _id in ids]

@@ -9,7 +9,7 @@ logger = setup_logger("Database")
 def get_participant_vids(p_id : str, n = 500, random:bool=False):
     logger.info(f"Fetching {n} videos for participant {p_id}")
     query = (
-        pl.scan_parquet(WATCH_HISTORY_PATH)
+        pl.scan_parquet(VIDEO_IDS_PATH)
         .filter(pl.col("participant_id") == p_id)
     )
     if random:

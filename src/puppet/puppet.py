@@ -47,13 +47,12 @@ class YTPuppet():
         return await get_videos_metadata(recs)
 
     async def _filter_language(self, recs : list[Video]):
-        recs = await self._populate_metadata(recs)
         return [vid for vid in recs if self.detector.detect_language_of(vid.title) != None]
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _get_homepage_recs(self, driver : YouTubeDriver, depth):
         recs, topics = await driver.get_homepage_recs()
-        recs = await self._filter_language(recs)
+        recs = await self._populate_metadata()
 
         self.history.append(
             Watch(

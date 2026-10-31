@@ -7,12 +7,6 @@ HEADLESS = False
 
 ROOT = Path(__file__).parents[1]
 
-load_dotenv(ROOT / ".env")
-API_KEY = json.loads(os.environ.get("API_KEY")) #YT Data API Key
-MAX_API_ERRORS : int = 5
-
-DB_DIR = ROOT / "data" / "db"
-DB_PATH = DB_DIR / "db.sqlite"
 VIDEO_IDS_PATH = ROOT / "data" / "video_ids.parquet"
 
 SESSION_DIR = ROOT / "data" / "session"
@@ -35,9 +29,6 @@ if not MODELS_DIR.exists():
 
 if not SESSION_DIR.exists():
     os.mkdir(SESSION_DIR)
-
-if not DB_DIR.exists():
-    os.mkdir(DB_DIR)
 
 if not LOG_DIR.exists():
     os.mkdir(LOG_DIR)

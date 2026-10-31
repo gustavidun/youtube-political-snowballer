@@ -1,1 +1,2 @@
 from .watch_history import get_participant_vids
+from .youtube_api import get_videos_metadata

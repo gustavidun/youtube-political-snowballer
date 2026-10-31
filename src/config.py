@@ -1,9 +1,15 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+import json
 
 HEADLESS = False
 
 ROOT = Path(__file__).parents[1]
+
+load_dotenv(ROOT / ".env")
+API_KEY = json.loads(os.environ.get("API_KEY")) #YT Data API Key
+MAX_API_ERRORS : int = 5
 
 VIDEO_IDS_PATH = ROOT / "data" / "video_ids.parquet"
 

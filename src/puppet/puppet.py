@@ -5,7 +5,7 @@ import random
 from tenacity import retry, stop_after_attempt, wait_exponential
 from lingua import Language, LanguageDetectorBuilder
 
-
+from data_fetcher import get_videos_metadata
 from .youtube_driver import YouTubeDriver, VideoUnavailableException, PlaybackException
 import config
 from logger import setup_logger
@@ -43,7 +43,11 @@ class YTPuppet():
             "logger": self.logger
         }
 
+    async def _populate_metadata(self, recs):
+        return await get_videos_metadata(recs)
+
     async def _filter_language(self, recs : list[Video]):
+        recs = await self._populate_metadata(recs)
         return [vid for vid in recs if self.detector.detect_language_of(vid.title) != None]
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))

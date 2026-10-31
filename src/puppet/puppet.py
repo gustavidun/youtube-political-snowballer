@@ -143,12 +143,13 @@ class YTPuppet():
         
         for i in range(retries_init):
             try:
-                next_vid = random.choice(self._filter_language(recs))
+                recs = await self._filter_language(recs)
+                next_vid = random.choice(recs)
                 break
             except:
                 recs = await self._get_homepage_recs(driver, 0)
             if i == retries_init - 1:
-                raise Exception("Could not load homepage.")
+                next_vid = get_participant_vids(self.cond, 1, random=False)[0]
             
         for i in range(1, self.drift_depth + 1):
             try:
@@ -159,12 +160,13 @@ class YTPuppet():
 
             for i in range(retries_vid):
                 try:
-                    next_vid = random.choice(self._filter_language(recs))
+                    recs = await self._filter_language(recs)
+                    next_vid = random.choice(recs)
                     break
                 except:
                     recs = await self._get_homepage_recs(driver, 0)
                 if i == retries_vid - 1:
-                    next_vid = get_participant_vids(self.cond, 1, random=False)[0]
+                    next_vid = await get_participant_vids(self.cond, 1, random=False)[0]
                     self.logger.warning(f"Failed to load recommendations {retries_vid} times. Fetching seed video instead: {next_vid.id}")
 
     async def serialize(self):

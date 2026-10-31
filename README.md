@@ -18,8 +18,8 @@ Each sock puppet navigates through two core phases:
 ```mermaid
 flowchart LR
     A[Seed Data / Watch History] --> B[Training Phase]
-    B -->|Watch N Seed Videos| C
-    C -->[Drift Phase]
+    B -->|Watch N Seed Videos| B
+    B --> C[Drift Phase]
     C -->|Follow Recommendations| C
     C -->|Save Trace| D[(data/puppets/*.pkl)]
 ```

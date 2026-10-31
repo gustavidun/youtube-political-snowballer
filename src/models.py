@@ -39,5 +39,5 @@ class Watch():
     topics : Optional[list[str]] = None
 
     def __str__(self):
-        return f"{self.video}. Depth: {self.depth}, puppet slant: {self.puppet_slant}, puppet state: {self.state}"
+        return f"{self.video}. Depth: {self.depth}, puppet state: {self.state}"
     

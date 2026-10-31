@@ -16,7 +16,7 @@ from models import Watch, Video
 PuppetState = Literal["init", "training", "drifting", "closed"]
 
 class YTPuppet():
-    def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG, languageTargets : list[Language] = [Language.DANISH]):
+    def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG, language_target : Language = Language.DANISH):
         self.ID = id
         self.cond = cond
 
@@ -27,7 +27,8 @@ class YTPuppet():
         self.cur_state : PuppetState = "init"
         self.history : list[Watch] = []
 
-        self.detector = LanguageDetectorBuilder.from_languages(*languageTargets).build()
+        self.language_target = language_target
+        self.detector = LanguageDetectorBuilder.from_languages(*[Language.DANISH, Language.ENGLISH]).build()
 
         self.logger = setup_logger(
             self.ID,
@@ -49,7 +50,7 @@ class YTPuppet():
         return await get_videos_metadata(recs)
 
     async def _filter_language(self, recs : list[Video]):
-        return [vid for vid in recs if self.detector.detect_language_of(vid.title) != None]
+        return [vid for vid in recs if self.detector.detect_language_of(vid.title) == self.language_target]
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _get_homepage_recs(self, driver : YouTubeDriver, depth):
@@ -166,7 +167,7 @@ class YTPuppet():
                 except:
                     recs = await self._get_homepage_recs(driver, 0)
                 if i == retries_vid - 1:
-                    next_vid = await get_participant_vids(self.cond, 1, random=False)[0]
+                    next_vid = get_participant_vids(self.cond, 1, random=False)[0]
                     self.logger.warning(f"Failed to load recommendations {retries_vid} times. Fetching seed video instead: {next_vid.id}")
 
     async def serialize(self):

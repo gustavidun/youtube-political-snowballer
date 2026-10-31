@@ -39,6 +39,7 @@ class YouTubeDriver():
             self.session_dir,
             headless=self.headless,
             channel="chrome",
+            locale="da-DK"
         )
         self._page = self._context.pages[0] if self._context.pages else await self._context.new_page()
 

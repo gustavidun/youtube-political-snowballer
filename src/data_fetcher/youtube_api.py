@@ -66,7 +66,6 @@ async def get_videos_metadata(vids : list[Video]) -> list[Video]:
     vids = [
         Video(
             id=item["id"],
-            slant=next((v for v in vids if v.id == item["id"]), None).slant,
             channel=item["snippet"]["channelTitle"],
             title=item["snippet"]["title"],
             description=item["snippet"].get("description", None),

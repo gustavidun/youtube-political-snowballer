@@ -23,7 +23,7 @@ class Video():
         return all(a in (None, "", []) for a in attrs)
 
     def __str__(self):
-        return f"Video ID: {self.id}, video slant: {self.slant}"
+        return f"Video ID: {self.id}"
 
 @dataclass
 class Watch():

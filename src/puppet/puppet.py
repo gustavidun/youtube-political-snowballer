@@ -3,6 +3,8 @@ from typing import Literal
 import pandas as pd
 import random
 from tenacity import retry, stop_after_attempt, wait_exponential
+from lingua import Language, LanguageDetectorBuilder
+
 
 from .youtube_driver import YouTubeDriver, VideoUnavailableException, PlaybackException
 import config
@@ -25,6 +27,9 @@ class YTPuppet():
         self.cur_state : PuppetState = "init"
         self.history : list[Watch] = []
 
+        self.languageTarget = [Language.DANISH]
+        self.detector = LanguageDetectorBuilder.from_languages(self.languageTarget).build()
+
         self.logger = setup_logger(
             self.ID,
             level=logger_level,
@@ -39,10 +44,13 @@ class YTPuppet():
             "logger": self.logger
         }
 
+    async def _filter_language(self, recs : list[Video]):
+        return [vid for vid in recs if self.detector.detect_language_of(vid.title) != None]
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _get_homepage_recs(self, driver : YouTubeDriver, depth):
         recs, topics = await driver.get_homepage_recs()
+        recs = await self._filter_language(recs)
 
         self.history.append(
             Watch(
@@ -123,17 +131,17 @@ class YTPuppet():
                 await self._get_homepage_recs(driver, i + 1)
 
 
-    async def drift(self, driver : YouTubeDriver):
+    async def drift(self, driver : YouTubeDriver, retries_init = 10, retries_vid = 3):
         self.cur_state = "drifting"
         recs = await self._get_homepage_recs(driver, 0)
         
-        for i in range(3):
+        for i in range(retries_init):
             try:
-                next_vid = random.choice(recs)
+                next_vid = random.choice(self._filter_language(recs))
                 break
             except:
                 recs = await self._get_homepage_recs(driver, 0)
-            if i == 2:
+            if i == retries_init - 1:
                 raise Exception("Could not load homepage.")
             
         for i in range(1, self.drift_depth + 1):
@@ -143,12 +151,15 @@ class YTPuppet():
             except: 
                 recs = await self._get_homepage_recs(driver, 0)
 
-            for i in range(3):
+            for i in range(retries_vid):
                 try:
-                    next_vid = random.choice(recs)
+                    next_vid = random.choice(self._filter_language(recs))
                     break
                 except:
                     recs = await self._get_homepage_recs(driver, 0)
+                if i == retries_vid - 1:
+                    next_vid = get_participant_vids(self.cond, 1, random=False)[0]
+                    self.logger.warning(f"Failed to load recommendations {retries_vid} times. Fetching seed video instead: {next_vid.id}")
 
     async def serialize(self):
         rows = [

@@ -180,6 +180,7 @@ class YTPuppet():
                 "video_id": getattr(w.video, "id", None),
                 "video_slant": getattr(w.video, "slant", None),
                 "recs_id": [r.id for r in w.recs],
+                "recs": [r for r in w.recs],
                 "errors": w.errors,
                 "source": w.source,
                 "watch_time": w.watch_time,

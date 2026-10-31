@@ -8,7 +8,8 @@ HEADLESS = False
 ROOT = Path(__file__).parents[1]
 
 load_dotenv(ROOT / ".env")
-API_KEY = json.loads(os.environ.get("API_KEY")) #YT Data API Key
+_raw_api_key = os.environ.get("API_KEY") or os.environ.get("YT_API_KEYS")
+API_KEY = json.loads(_raw_api_key) if _raw_api_key else []
 MAX_API_ERRORS : int = 5
 
 VIDEO_IDS_PATH = ROOT / "data" / "video_ids.parquet"

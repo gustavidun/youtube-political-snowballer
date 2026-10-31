@@ -29,7 +29,7 @@ class Video():
 class Watch():
     state : str
     puppet : "YTPuppet"
-    puppet_cond : tuple
+    puppet_cond : str
     depth : int
     video : Video
     recs : list[Video]

@@ -21,7 +21,6 @@ class YTPuppet():
         self.train_depth = train_depth
         self.drift_depth = drift_depth
         self.wt = wt
-        self.utility = utility
 
         self.cur_state : PuppetState = "init"
         self.history : list[Watch] = []
@@ -110,7 +109,7 @@ class YTPuppet():
 
         train_vids = get_participant_vids(
             p_id=self.cond,
-            n=self.train_depth
+            n=self.train_depth,
             random=True
         )
 

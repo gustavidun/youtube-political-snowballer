@@ -10,7 +10,7 @@ def get_participant_vids(p_id : str, n = 500, random:bool=False):
     logger.info(f"Fetching {n} videos for participant {p_id}")
     query = (
         pl.scan_parquet(VIDEO_IDS_PATH)
-        .filter(pl.col("participant_id") == p_id)
+        .filter(pl.col("ideology") == p_id)
     )
     if random:
         query = query.collect().sample(n=n)

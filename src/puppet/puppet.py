@@ -151,8 +151,6 @@ class YTPuppet():
                 "source": w.source,
                 "watch_time": w.watch_time,
                 "topics": w.topics,
-                "utility": self.utility,
-                "slant_range": self.slant_range
             }
             for w in self.history
         ]
@@ -160,8 +158,6 @@ class YTPuppet():
 
 
     async def run(self):
-        self.logger.info(f"Running sock-puppet, {self.ID} – Utility: {self.utility}, Slant: {self.target_slant}")
-
         async with self.driver(**self.driver_args) as driver:
 
             self.logger.info("Initialising training...")

@@ -24,19 +24,14 @@ flowchart LR
 ```
 
 - **Browser Automation**: Powered by [Patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) (stealth Chromium) with persistent browser sessions and automatic cookie consent handling.
-- **Concurreny**: Asynchronous multi-puppet execution managed via Python's `asyncio.TaskGroup`.
+- **Concurreny**: Run multiple puppets asynchronously. 
 - **Data Capture**: Records watched videos, recommendation lists, watch times, topics, and error logs per interaction.
 
 ---
 
 ## Getting Started
 
-### 1. Prerequisites
-
-- Python 3.11+
-- Google Chrome
-
-### 2. Installation
+### Installation
 
 Clone the repository and install dependencies:
 
@@ -51,7 +46,7 @@ pip install -r requirements.txt
 python -m patchright install chrome --with-deps
 ```
 
-### 3. Environment Configuration
+### Environment Configuration
 
 Create a `.env` file in the project root:
 

@@ -48,6 +48,7 @@ class YTPuppet():
             Watch(
                 state=self.cur_state,
                 puppet=self,
+                puppet_cond=self.cond,
                 depth=depth,
                 video=None,
                 recs=recs,

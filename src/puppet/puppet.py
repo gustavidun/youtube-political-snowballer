@@ -1,7 +1,7 @@
 import logging
 from typing import Literal
 import pandas as pd
-import asyncio
+import random
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from .youtube_driver import YouTubeDriver, VideoUnavailableException, PlaybackException
@@ -14,15 +14,9 @@ from models import Watch, Video
 PuppetState = Literal["init", "training", "drifting", "closed"]
 
 class YTPuppet():
-    def __init__(self, id : str, slant : float, target_slant : float, headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, utility=True, logger_level=logging.DEBUG):
+    def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG):
         self.ID = id
-        self.cur_slant = slant
-        self.init_slant = slant
-        self.target_slant = target_slant
-
-        self.slant_margin = 0.1
-        range_center = max(-1 + self.slant_margin, min(1 - self.slant_margin, self.cur_slant))
-        self.slant_range = (range_center-self.slant_margin, range_center+self.slant_margin)
+        self.cond = cond
 
         self.train_depth = train_depth
         self.drift_depth = drift_depth
@@ -55,8 +49,6 @@ class YTPuppet():
             Watch(
                 state=self.cur_state,
                 puppet=self,
-                puppet_slant=self.cur_slant,
-                puppet_cond=(self.init_slant, self.target_slant),
                 depth=depth,
                 video=None,
                 recs=recs,
@@ -97,8 +89,7 @@ class YTPuppet():
         watch = Watch(
             state=self.cur_state, 
             puppet=self,
-            puppet_slant=self.cur_slant,
-            puppet_cond=(self.init_slant, self.target_slant),
+            puppet_cond=self.cond,
             depth=depth,
             video=vid,
             recs=recs,
@@ -118,8 +109,9 @@ class YTPuppet():
         self.cur_state = "training"
 
         train_vids = get_participant_vids(
-            p_id=self.ID,
+            p_id=self.cond,
             n=self.train_depth
+            random=True
         )
 
         self.logger.debug(f"TRAIN DEPTH: {self.train_depth}")
@@ -131,18 +123,31 @@ class YTPuppet():
                 await self._get_homepage_recs(driver, i + 1)
 
 
+    async def drift(self, driver : YouTubeDriver):
+        self.cur_state = "drifting"
+        recs = await self._get_homepage_recs(driver, 0)
+        next_vid = random.choice(recs)
+
+        for i in range(1, self.drift_depth + 1):
+            try:
+                watch = await self._watch(driver, next_vid, i, get_slants=True)
+                recs = watch.recs
+            except: 
+                recs = await self._get_homepage_recs(driver, 0)
+
+            next_vid = random.choice(recs)     
+
+
     async def serialize(self):
         rows = [
             {
                 "puppet_id": self.ID,
                 "puppet_state": w.state,
-                "puppet_slant": w.puppet_slant,
                 "puppet_cond": w.puppet_cond,
                 "depth": w.depth,
                 "video_id": getattr(w.video, "id", None),
                 "video_slant": getattr(w.video, "slant", None),
                 "recs_id": [r.id for r in w.recs],
-                "recs_slant": [r.slant for r in w.recs],
                 "errors": w.errors,
                 "source": w.source,
                 "watch_time": w.watch_time,
@@ -163,8 +168,12 @@ class YTPuppet():
             self.logger.info("Initialising training...")
             await self.train(driver)
 
+            self.logger.info("Initialising drifting...")
+            await self.drift(driver)
+
             self.logger.info("Finished run. Saving...")
             df = await self.serialize()
+
             path = config.PUPPETS_DIR / f"{self.ID}.pkl"
             df.to_pickle(path)
 

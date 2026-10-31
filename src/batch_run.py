@@ -2,10 +2,9 @@ import asyncio
 import argparse
 
 from puppet import YTPuppet
-from data_fetcher import get_participant_ids
+import shortuuid
 
 import random
-import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--n", type=int, default=45)
@@ -21,6 +20,8 @@ DRIFT = args.drift
 HEADLESS = args.headless
 LOGGER = args.debug
 
+CONDS = ["left", "center", "right", "anti-system"]
+
 crashes = 0
 
 async def safe_run(puppet : YTPuppet):
@@ -35,18 +36,15 @@ async def safe_run(puppet : YTPuppet):
 async def main():
 
     puppets = []
-    ids = get_participant_ids(N)
 
     for i in range(N):
         puppets.append(
             YTPuppet(
-                ids[i],
-                slant=0,
-                target_slant=0,
+                f"p-{shortuuid.uuid()}",
                 train_depth=TRAIN,
                 drift_depth=DRIFT,
+                cond=random.choice(CONDS),
                 headless=HEADLESS,
-                utility=False,
                 logger_level=logging.DEBUG if LOGGER else logging.INFO
             )
         )

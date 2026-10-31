@@ -1,1 +1,0 @@
-from .inference import predict, filter_english

@@ -1,4 +1,4 @@
-cd youtube-audit-watch-history
+cd youtube-political-snowballer
 source .venv/bin/activate
 git pull
 pip install -r requirements.txt

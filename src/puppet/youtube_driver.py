@@ -20,11 +20,12 @@ class PlaybackException(Exception):
 
 class YouTubeDriver():
     """Async context manager for interacting with YouTube using Playwright"""
-    def __init__(self, session_dir : Path, headless : bool, ublock_path : Path, logger : logging.Logger):
+    def __init__(self, session_dir : Path, headless : bool, ublock_path : Path, logger : logging.Logger, geo_locale="DK"):
         self.session_dir = session_dir
         self.headless = headless
         self.ublock_path = ublock_path
         self.logger = logger
+        self.geo_locale = geo_locale
 
         self._page : Page | None = None
         self._context : BrowserContext | None = None
@@ -40,6 +41,17 @@ class YouTubeDriver():
             headless=self.headless,
             channel="chrome",
         )
+
+        #add danish localization
+        await self._context.add_cookies([
+            {
+                "name": "PREF",
+                "value": f"hl=en&gl={self.geo_locale}",
+                "domain": ".youtube.com",
+                "path": "/"
+            }
+        ])
+
         self._page = self._context.pages[0] if self._context.pages else await self._context.new_page()
 
         session = await self._context.new_cdp_session(self._page)

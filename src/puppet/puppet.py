@@ -183,12 +183,12 @@ class YTPuppet():
                 "recs_title": [r.title for r in w.recs],
                 "recs_channel": [r.channel for r in w.recs],
                 "recs_description": [r.description for r in w.recs],
-                "recs_tags": [r.tags for r in w.recs],
-                "recs_category": [r.tags for r in w.recs],
-                "errors": w.errors,
+                "recs_tags": [r.tags or [] for r in w.recs],
+                "recs_category": [r.category for r in w.recs],
+                "errors": str(w.errors),
                 "source": w.source,
                 "watch_time": w.watch_time,
-                "topics": w.topics,
+                "topics": w.topics or [],
             }
             for w in self.history
         ]
@@ -207,7 +207,7 @@ class YTPuppet():
             self.logger.info("Finished run. Saving...")
             df = await self.serialize()
 
-            path = config.PUPPETS_DIR / f"{self.ID}.pkl"
+            path = config.PUPPETS_DIR / f"{self.ID}.parquet"
             df.to_parquet(path)
 
             self.logger.info(f"Puppet data saved to {path}. Closing...")

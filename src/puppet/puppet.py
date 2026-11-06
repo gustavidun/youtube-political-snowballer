@@ -183,6 +183,7 @@ class YTPuppet():
                 "recs_id": [r.id for r in w.recs],
                 "recs_title": [r.title for r in w.recs],
                 "recs_channel": [r.channel for r in w.recs],
+                "recs_channel_id": [r.channel_id for r in w.recs],
                 "recs_description": [r.description for r in w.recs],
                 "recs_tags": [r.tags or [] for r in w.recs],
                 "recs_category": [r.category for r in w.recs],

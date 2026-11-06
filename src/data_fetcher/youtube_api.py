@@ -70,7 +70,7 @@ async def get_videos_metadata(vids : list[Video]) -> list[Video]:
             title=item["snippet"]["title"],
             description=item["snippet"].get("description", None),
             category=item["snippet"].get("categoryId", None),
-            tags=item["snippet"].get("tags", [])
+            tags=item["snippet"].get("tags", []),
             channel_id=item["snippet"].get("channelId", None)
         ) 
         for item in video_resp["items"]

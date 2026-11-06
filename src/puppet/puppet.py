@@ -14,6 +14,7 @@ from data_fetcher import get_participant_vids
 from models import Watch, Video
 
 PuppetState = Literal["init", "training", "drifting", "closed"]
+LANGUAGES = [Language.ENGLISH, Language.FRENCH, Language.GERMAN, Language.SPANISH, Language.DANISH, Language.SWEDISH]
 
 class YTPuppet():
     def __init__(self, id : str, cond : Literal["left", "center", "right", "anti-system"], headless : bool = True, train_depth = 100, drift_depth = 200, wt = 30, logger_level=logging.DEBUG, language_target : Language = Language.DANISH):
@@ -28,7 +29,7 @@ class YTPuppet():
         self.history : list[Watch] = []
 
         self.language_target = language_target
-        self.detector = LanguageDetectorBuilder.from_languages(*[Language.DANISH, Language.ENGLISH]).build()
+        self.detector = LanguageDetectorBuilder.from_languages(*LANGUAGES).build()
 
         self.logger = setup_logger(
             self.ID,

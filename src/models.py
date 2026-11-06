@@ -9,6 +9,7 @@ class Video():
     id : str
     title : Optional[str] = None
     channel : Optional[str] = None
+    channel_id : Optional[str] = None
     description : Optional[str] = None
     tags : Optional[list[str]] = None
     category : Optional[str] = None

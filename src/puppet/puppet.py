@@ -51,7 +51,7 @@ class YTPuppet():
         return await get_videos_metadata(recs)
 
     async def _filter_language(self, recs : list[Video]):
-        return [vid for vid in recs if self.detector.detect_language_of(vid.title) == self.language_target]
+        return [vid for vid in recs if self.detector.compute_language_confidence(vid.title, self.language_target) > 0.7]
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def _get_homepage_recs(self, driver : YouTubeDriver, depth):
